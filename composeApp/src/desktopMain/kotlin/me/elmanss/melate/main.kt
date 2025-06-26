@@ -13,7 +13,7 @@ fun main() = application {
   initializeKoin(DriverFactory().createDriver())
   Window(
       onCloseRequest = ::exitApplication,
-      title = "LottoGeneratorCMP",
+      title = "Melate CMP",
       state =
           rememberWindowState(
               position = WindowPosition.Aligned(Alignment.Center),
