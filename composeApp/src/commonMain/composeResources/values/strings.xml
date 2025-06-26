@@ -1,0 +1,94 @@
+<resources>
+    <string name="app_name">MelateKotlin</string>
+    <string name="txt_mis_sorteos">Mis sorteos</string>
+    <string name="txt_button_mis_favs">Mis sorteos</string>
+    <string name="desc_keyboard_back">Back icon</string>
+    <string name="label_keyboard_0">0</string>
+    <string name="label_keyboard_1">1</string>
+    <string name="label_keyboard_2">2</string>
+    <string name="label_keyboard_3">3</string>
+    <string name="label_keyboard_4">4</string>
+    <string name="label_keyboard_5">5</string>
+    <string name="label_keyboard_6">6</string>
+    <string name="label_keyboard_7">7</string>
+    <string name="label_keyboard_8">8</string>
+    <string name="label_keyboard_9">9</string>
+    <string name="label_keyboard_OK">OK</string>
+    <string-array name="numbers">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
+        <item>28</item>
+        <item>29</item>
+        <item>30</item>
+
+        <item>31</item>
+        <item>32</item>
+        <item>33</item>
+        <item>34</item>
+        <item>35</item>
+        <item>36</item>
+        <item>37</item>
+        <item>38</item>
+        <item>39</item>
+        <item>40</item>
+
+        <item>41</item>
+        <item>42</item>
+        <item>43</item>
+        <item>44</item>
+        <item>45</item>
+        <item>46</item>
+        <item>47</item>
+        <item>48</item>
+        <item>49</item>
+        <item>50</item>
+
+        <item>51</item>
+        <item>52</item>
+        <item>53</item>
+        <item>54</item>
+        <item>55</item>
+        <item>56</item>
+    </string-array>
+    <string name="title_activity_compose_main">@string/app_name</string>
+    <string name="txt_title_aviso">Aviso</string>
+    <string name="txt_msg_add_to_fav">¿Deseas agregar este sorteo de tu lista de favoritos?</string>
+    <string name="txt_action_yes">Si</string>
+    <string name="txt_action_add">Agregar</string>
+    <string name="txt_sorteo_success">Sorteo agregado a favoritos.</string>
+    <string name="txt_button_mis_favs_create">Crear sorteo</string>
+    <string name="txt_fav_deletion_success">Sorteo eliminados de favoritos.</string>
+    <string name="txt_msg_delete_fav">¿Deseas eliminar este sorteo de tu lista de favoritos?</string>
+    <string name="txt_action_delete">Eliminar</string>
+    <string name="txt_title_fav_create">Crear un sorteo</string>
+    <string name="txt_sorteo_dialog_title">Numeros seleccionados</string>
+    <string name="txt_sorteo_dialog_msg">Los números que seleccionaste son: \n%1$s.\n\n¿Deseas guardarlos?</string>
+    <string name="txt_empty_fav_msg">No tienes sorteos guardados.\nCrea uno nuevo, o selecciona el sorteo de tu preferencia en la pantalla anterior.</string>
+</resources>
