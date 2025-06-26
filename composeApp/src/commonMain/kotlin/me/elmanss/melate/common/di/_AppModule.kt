@@ -1,8 +1,6 @@
 package me.elmanss.melate.common.di
 
 import app.cash.sqldelight.db.SqlDriver
-import java.util.Random
-import java.util.concurrent.ThreadLocalRandom
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
@@ -28,6 +26,9 @@ import me.elmanss.melate.home.domain.usecase.SaveToFavorites
 import me.elmanss.melate.home.presentation.HomeViewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatform
+import java.util.Random
+import java.util.concurrent.ThreadLocalRandom
 
 @OptIn(FormatStringsInDatetimeFormats::class)
 fun appModule(driver: SqlDriver) = module {
@@ -70,5 +71,7 @@ fun appModule(driver: SqlDriver) = module {
 }
 
 fun initializeKoin(driver: SqlDriver) {
-  startKoin { modules(appModule(driver)) }
+  if (KoinPlatform.getKoinOrNull() == null) {
+    startKoin { modules(appModule(driver)) }
+  }
 }
