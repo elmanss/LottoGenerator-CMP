@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MelateKotlin</string>
+    <string name="app_name">Melate CMP</string>
     <string name="txt_mis_sorteos">Mis sorteos</string>
     <string name="txt_button_mis_favs">Mis sorteos</string>
     <string name="desc_keyboard_back">Back icon</string>
