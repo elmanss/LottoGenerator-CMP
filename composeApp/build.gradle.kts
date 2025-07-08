@@ -26,6 +26,7 @@ kotlin {
       implementation(compose.preview)
       implementation(libs.androidx.activity.compose)
       implementation(libs.android.driver)
+      implementation(libs.ktor.client.android)
     }
     commonMain.dependencies {
       implementation(compose.runtime)
@@ -58,12 +59,19 @@ kotlin {
       implementation(libs.constraintlayout.compose.multiplatform.v060shaded)
 
       implementation(libs.coroutines.extensions)
+
+      //Networking, http.
+      implementation(libs.ktor.client.core)
+      implementation(libs.ktor.client.content.negotiation)
+      implementation(libs.ktor.serialization.kotlinx.json)
     }
     commonTest.dependencies { implementation(libs.kotlin.test) }
     desktopMain.dependencies {
       implementation(compose.desktop.currentOs)
       implementation(libs.kotlinx.coroutinesSwing)
       implementation(libs.sqlite.driver)
+
+      implementation(libs.ktor.client.cio)
     }
   }
 }
