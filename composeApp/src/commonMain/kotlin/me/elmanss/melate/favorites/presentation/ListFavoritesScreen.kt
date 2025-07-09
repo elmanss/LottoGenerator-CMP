@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -39,15 +41,16 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import co.touchlab.kermit.Logger
 import lottogeneratorcmp.composeapp.generated.resources.Res
+import lottogeneratorcmp.composeapp.generated.resources.cloud
 import lottogeneratorcmp.composeapp.generated.resources.heart_plus_24px
+import lottogeneratorcmp.composeapp.generated.resources.human_edit
 import lottogeneratorcmp.composeapp.generated.resources.txt_action_delete
-import lottogeneratorcmp.composeapp.generated.resources.txt_button_mis_favs_create
 import lottogeneratorcmp.composeapp.generated.resources.txt_empty_fav_msg
 import lottogeneratorcmp.composeapp.generated.resources.txt_fav_deletion_success
 import lottogeneratorcmp.composeapp.generated.resources.txt_mis_sorteos
 import lottogeneratorcmp.composeapp.generated.resources.txt_msg_delete_fav
 import lottogeneratorcmp.composeapp.generated.resources.txt_title_aviso
-import me.elmanss.melate.common.presentation.component.MelateFab
+import me.elmanss.melate.common.presentation.component.MelateActionExtendedFab
 import me.elmanss.melate.common.presentation.component.MelatePlatformDependentActionTopBar
 import me.elmanss.melate.common.presentation.component.MelateSorteoActionDialog
 import me.elmanss.melate.common.presentation.theme.Gray
@@ -76,24 +79,47 @@ class ListFavoritesScreen : Screen {
 
     Scaffold(
         topBar = {
-          MelatePlatformDependentActionTopBar(
-              platform = getPlatform(),
-              title = stringResource(Res.string.txt_mis_sorteos),
-              onBack = { viewModel.sendEvent(ListFavUiEvent.NavigateBack) }) {
-                if (multiselectState) {
-                  IconButton(
-                      onClick = { viewModel.sendEvent(ListFavUiEvent.ShowMultiDeleteFavDialog) }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
-                      }
+          Column {
+            MelatePlatformDependentActionTopBar(
+                platform = getPlatform(),
+                title = stringResource(Res.string.txt_mis_sorteos),
+                onBack = { viewModel.sendEvent(ListFavUiEvent.NavigateBack) }) {
+                  if (multiselectState) {
+                    IconButton(
+                        onClick = {
+                          viewModel.sendEvent(ListFavUiEvent.ShowMultiDeleteFavDialog)
+                        }) {
+                          Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+                        }
+                  }
                 }
-              }
+
+            if (!multiselectState && uiState.value.isLoading)
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+          }
         },
         floatingActionButton = {
           if (!multiselectState) {
-            MelateFab(
+            MelateActionExtendedFab(
                 listState = sorteoState,
-                action = { viewModel.sendEvent(ListFavUiEvent.GoToCreate) },
-                text = stringResource(Res.string.txt_button_mis_favs_create))
+                actionOneIcon = org.jetbrains.compose.resources.vectorResource(Res.drawable.cloud),
+                onActionOneClicked = {
+                  viewModel.sendEvent(ListFavUiEvent.ShowLoader)
+                  viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
+                  //                      if (connectivityState == NetworkStatus.Available) {
+                  //                          viewModel.sendEvent(ListFavUiEvent.ShowLoader)
+                  //
+                  // viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
+                  //                      } else {
+                  //
+                  // viewModel.sendEvent(ListFavUiEvent.ShowConnectivityMessage(true))
+                  //                      }
+                },
+                actionTwoIcon =
+                    org.jetbrains.compose.resources.vectorResource(Res.drawable.human_edit),
+            ) {
+              viewModel.sendEvent(ListFavUiEvent.GoToCreate)
+            }
           }
         },
         snackbarHost = { SnackbarHost(snackbarState) },
@@ -186,6 +212,7 @@ class ListFavoritesScreen : Screen {
     if (uiState.value.multideleteCompleted) {
       viewModel.sendEvent(ListFavUiEvent.DisableMultiDelete)
       viewModel.sendEvent(ListFavUiEvent.HideMultiDeleteFavDialog)
+      viewModel.sendEvent(ListFavUiEvent.ClearFlags)
     }
 
     if (uiState.value.favTapped) {

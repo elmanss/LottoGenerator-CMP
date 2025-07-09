@@ -8,6 +8,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -16,9 +18,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.elmanss.melate.favorites.domain.model.FavoritoModel
 import me.elmanss.melate.favorites.domain.usecase.FavoritesUseCases
+import kotlin.time.Duration.Companion.seconds
 
 sealed class ListFavUiEvent {
   data object FetchFavs : ListFavUiEvent()
+
+  data object FetchFavFromNetwork : ListFavUiEvent()
 
   data class ShowDeleteFavDialog(val fav: FavoritoModel) : ListFavUiEvent()
 
@@ -45,6 +50,10 @@ sealed class ListFavUiEvent {
   data object NavigateBack : ListFavUiEvent()
 
   data object HideSuccessMessage : ListFavUiEvent()
+
+  data object ShowLoader : ListFavUiEvent()
+
+  data object HideLoader : ListFavUiEvent()
 }
 
 class ListFavoritesScreenViewModel(private val useCases: FavoritesUseCases) : ScreenModel {
@@ -103,8 +112,28 @@ class ListFavoritesScreenViewModel(private val useCases: FavoritesUseCases) : Sc
         showDeletionMessage(false)
       }
 
+      ListFavUiEvent.FetchFavFromNetwork -> {
+        fetchFavFromNetwork()
+      }
+
+      ListFavUiEvent.HideLoader -> {
+        hideLoader()
+      }
+
+      ListFavUiEvent.ShowLoader -> {
+        showLoader()
+      }
+
       ListFavUiEvent.NavigateBack -> _state.update { state -> state.copy(navigateBack = true) }
     }
+  }
+
+  private fun showLoader() {
+    _state.update { state -> state.copy(isLoading = true) }
+  }
+
+  private fun hideLoader() {
+    _state.update { state -> state.copy(isLoading = false) }
   }
 
   private fun deleteFavs(model: FavoritoModel) {
@@ -172,5 +201,18 @@ class ListFavoritesScreenViewModel(private val useCases: FavoritesUseCases) : Sc
 
   private fun showMultideletionPrompt(show: Boolean = false) {
     _state.update { state -> state.copy(showMultiDeletionPrompt = show) }
+  }
+
+  private fun fetchFavFromNetwork() {
+    screenModelScope.launch {
+      delay(1.seconds)
+      useCases
+          .fetchSorteoFromNetwork()
+          .filter { it.isSuccess() }
+          .collectLatest {
+            useCases.addFavorite(it.getSuccessData())
+            sendEvent(ListFavUiEvent.ClearFlags)
+          }
+    }
   }
 }

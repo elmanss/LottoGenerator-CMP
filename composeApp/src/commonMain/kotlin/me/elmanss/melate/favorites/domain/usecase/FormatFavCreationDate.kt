@@ -1,6 +1,7 @@
 package me.elmanss.melate.favorites.domain.usecase
 
-import kotlinx.datetime.Instant
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
@@ -33,7 +34,7 @@ offset(UtcOffset.Formats.FOUR_DIGITS)
  */
 
 class FormatFavCreationDate(val dateTimeFormat: DateTimeFormat<LocalDateTime>) {
-  @OptIn(FormatStringsInDatetimeFormats::class)
+  @OptIn(FormatStringsInDatetimeFormats::class, ExperimentalTime::class)
   operator fun invoke(createdAt: Long): String {
     val datetime = Instant.fromEpochMilliseconds(createdAt).toLocalDateTime(TimeZone.UTC)
     return dateTimeFormat.format(datetime)

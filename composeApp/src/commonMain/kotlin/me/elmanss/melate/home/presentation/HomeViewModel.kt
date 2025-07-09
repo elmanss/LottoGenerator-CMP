@@ -3,6 +3,9 @@ package me.elmanss.melate.home.presentation
 import cafe.adriel.voyager.core.model.ScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
 import co.touchlab.kermit.Logger
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.ExperimentalTime
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +17,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.elmanss.melate.home.domain.model.SorteoModel
 import me.elmanss.melate.home.domain.usecase.HomeUseCases
-import java.time.ZonedDateTime
-import kotlin.time.Duration.Companion.milliseconds
 
 sealed class HomeUiEvent {
   data object RefreshSorteos : HomeUiEvent()
@@ -109,9 +110,10 @@ class HomeViewModel(private val useCases: HomeUseCases) : ScreenModel {
     }
   }
 
+  @OptIn(ExperimentalTime::class)
   private fun launchSaveToFavorites(sorteoModel: SorteoModel) {
     screenModelScope.launch {
-      useCases.saveToFavorites(sorteoModel, ZonedDateTime.now().toInstant().toEpochMilli())
+      useCases.saveToFavorites(sorteoModel, Clock.System.now().toEpochMilliseconds())
       delay(250)
       dismissWarning()
       showSuccessMsg(true)
@@ -137,12 +139,13 @@ class HomeViewModel(private val useCases: HomeUseCases) : ScreenModel {
     _state.update { state -> state.copy(sorteos = currentSorteosMutable) }
   }
 
+  @OptIn(ExperimentalTime::class)
   private fun saveSelected() {
     screenModelScope.launch {
       val selectedSorteos = state.value.sorteos.filter { it.selected }
       Logger.d { "Selected sorteos: $selectedSorteos" }
       selectedSorteos
-          .forEach { useCases.saveToFavorites(it, ZonedDateTime.now().toInstant().toEpochMilli()) }
+          .forEach { useCases.saveToFavorites(it, Clock.System.now().toEpochMilliseconds()) }
           .also {
             clearSelected()
             _state.update { state -> state.copy(multiSelectMode = false) }

@@ -7,9 +7,14 @@ import me.elmanss.melate.home.domain.model.SorteoModel
 import me.elmanss.melate.home.domain.repository.SorteoRepository
 
 class FetchSorteos(private val repository: SorteoRepository) {
-  operator fun invoke(): Flow<List<SorteoModel>> {
+  suspend operator fun invoke(): Flow<List<SorteoModel>> {
     val sorteos = mutableListOf<List<Int>>()
-    repeat(30) { sorteos.add(repository.fetchSorteos()) }
+    repeat(30) {
+      val result = repository.fetchSorteos()
+      if (result.isSuccess()) {
+        sorteos.add(result.getSuccessData())
+      }
+    }
 
     return flowOf(sorteos).map { it.map { SorteoModel(it) } }
   }

@@ -1,8 +1,7 @@
-package me.elmanss.melate.home.domain.repository
+package me.elmanss.melate.common.domain.datasource
 
 import me.elmanss.melate.common.domain.model.RequestState
 
-interface SorteoRepository {
-
+interface SorteoDataSource {
   suspend fun fetchSorteos(): RequestState<List<Int>>
 }
