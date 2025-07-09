@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import lottogeneratorcmp.composeapp.generated.resources.Res
 import lottogeneratorcmp.composeapp.generated.resources.cellphone
+import lottogeneratorcmp.composeapp.generated.resources.cloud
 import lottogeneratorcmp.composeapp.generated.resources.human_edit
 import me.elmanss.melate.common.data.local.FavOrigin
 import me.elmanss.melate.favorites.domain.model.FavoritoModel
@@ -79,8 +80,11 @@ fun ListFavoriteItem(
               Image(
                   painter =
                       painterResource(
-                          if (favorite.origin == FavOrigin.Random) Res.drawable.cellphone
-                          else Res.drawable.human_edit),
+                          when (favorite.origin) {
+                            FavOrigin.Random -> Res.drawable.cellphone
+                            FavOrigin.Network -> Res.drawable.cloud
+                            else -> Res.drawable.human_edit
+                          }),
                   contentDescription = "Origin icon",
               )
             }

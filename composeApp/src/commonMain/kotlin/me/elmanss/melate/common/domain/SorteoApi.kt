@@ -4,7 +4,7 @@ import me.elmanss.melate.common.domain.model.RequestState
 
 interface SorteoApi {
   companion object {
-    val URL = "https://www.randomnumberapi.com/api/"
+    const val URL = "https://www.randomnumberapi.com/api/"
   }
 
   suspend fun fetchSorteos(

@@ -39,15 +39,16 @@ import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import co.touchlab.kermit.Logger
 import lottogeneratorcmp.composeapp.generated.resources.Res
+import lottogeneratorcmp.composeapp.generated.resources.cloud
 import lottogeneratorcmp.composeapp.generated.resources.heart_plus_24px
+import lottogeneratorcmp.composeapp.generated.resources.human_edit
 import lottogeneratorcmp.composeapp.generated.resources.txt_action_delete
-import lottogeneratorcmp.composeapp.generated.resources.txt_button_mis_favs_create
 import lottogeneratorcmp.composeapp.generated.resources.txt_empty_fav_msg
 import lottogeneratorcmp.composeapp.generated.resources.txt_fav_deletion_success
 import lottogeneratorcmp.composeapp.generated.resources.txt_mis_sorteos
 import lottogeneratorcmp.composeapp.generated.resources.txt_msg_delete_fav
 import lottogeneratorcmp.composeapp.generated.resources.txt_title_aviso
-import me.elmanss.melate.common.presentation.component.MelateFab
+import me.elmanss.melate.common.presentation.component.MelateActionExtendedFab
 import me.elmanss.melate.common.presentation.component.MelatePlatformDependentActionTopBar
 import me.elmanss.melate.common.presentation.component.MelateSorteoActionDialog
 import me.elmanss.melate.common.presentation.theme.Gray
@@ -90,10 +91,25 @@ class ListFavoritesScreen : Screen {
         },
         floatingActionButton = {
           if (!multiselectState) {
-            MelateFab(
+            MelateActionExtendedFab(
                 listState = sorteoState,
-                action = { viewModel.sendEvent(ListFavUiEvent.GoToCreate) },
-                text = stringResource(Res.string.txt_button_mis_favs_create))
+                actionOneIcon = org.jetbrains.compose.resources.vectorResource(Res.drawable.cloud),
+                onActionOneClicked = {
+                  viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
+                  //                      if (connectivityState == NetworkStatus.Available) {
+                  //                          viewModel.sendEvent(ListFavUiEvent.ShowLoader)
+                  //
+                  // viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
+                  //                      } else {
+                  //
+                  // viewModel.sendEvent(ListFavUiEvent.ShowConnectivityMessage(true))
+                  //                      }
+                },
+                actionTwoIcon =
+                    org.jetbrains.compose.resources.vectorResource(Res.drawable.human_edit),
+            ) {
+              viewModel.sendEvent(ListFavUiEvent.GoToCreate)
+            }
           }
         },
         snackbarHost = { SnackbarHost(snackbarState) },

@@ -41,14 +41,10 @@ class SorteoApiImpl : SorteoApi {
       count: String
   ): RequestState<List<Int>> {
     return try {
-      val response =
-          httpClient.get(
-              SorteoApi.URL.apply {
-                plus("${version}/")
-                plus("&min=$min")
-                plus("&max=$max")
-                plus("&count=$count")
-              })
+      val url = "${SorteoApi.URL}$version/random?min=$min&max=$max&count=$count"
+      Logger.d(TAG) { "Url: $url" }
+
+      val response = httpClient.get(urlString = url)
       if (response.status.value == 200) {
         Logger.d(TAG) { "Success" }
         val apiResponse = Json.decodeFromString<List<Int>>(response.body())
