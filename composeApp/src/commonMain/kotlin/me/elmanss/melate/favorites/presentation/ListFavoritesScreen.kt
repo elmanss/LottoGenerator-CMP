@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -77,17 +79,24 @@ class ListFavoritesScreen : Screen {
 
     Scaffold(
         topBar = {
-          MelatePlatformDependentActionTopBar(
-              platform = getPlatform(),
-              title = stringResource(Res.string.txt_mis_sorteos),
-              onBack = { viewModel.sendEvent(ListFavUiEvent.NavigateBack) }) {
-                if (multiselectState) {
-                  IconButton(
-                      onClick = { viewModel.sendEvent(ListFavUiEvent.ShowMultiDeleteFavDialog) }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
-                      }
+          Column {
+            MelatePlatformDependentActionTopBar(
+                platform = getPlatform(),
+                title = stringResource(Res.string.txt_mis_sorteos),
+                onBack = { viewModel.sendEvent(ListFavUiEvent.NavigateBack) }) {
+                  if (multiselectState) {
+                    IconButton(
+                        onClick = {
+                          viewModel.sendEvent(ListFavUiEvent.ShowMultiDeleteFavDialog)
+                        }) {
+                          Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
+                        }
+                  }
                 }
-              }
+
+            if (!multiselectState && uiState.value.isLoading)
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+          }
         },
         floatingActionButton = {
           if (!multiselectState) {
@@ -95,6 +104,7 @@ class ListFavoritesScreen : Screen {
                 listState = sorteoState,
                 actionOneIcon = org.jetbrains.compose.resources.vectorResource(Res.drawable.cloud),
                 onActionOneClicked = {
+                  viewModel.sendEvent(ListFavUiEvent.ShowLoader)
                   viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
                   //                      if (connectivityState == NetworkStatus.Available) {
                   //                          viewModel.sendEvent(ListFavUiEvent.ShowLoader)
@@ -202,6 +212,7 @@ class ListFavoritesScreen : Screen {
     if (uiState.value.multideleteCompleted) {
       viewModel.sendEvent(ListFavUiEvent.DisableMultiDelete)
       viewModel.sendEvent(ListFavUiEvent.HideMultiDeleteFavDialog)
+      viewModel.sendEvent(ListFavUiEvent.ClearFlags)
     }
 
     if (uiState.value.favTapped) {

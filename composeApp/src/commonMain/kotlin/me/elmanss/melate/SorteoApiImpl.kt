@@ -6,6 +6,8 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.http.appendPathSegments
+import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import me.elmanss.melate.common.domain.SorteoApi
@@ -41,14 +43,18 @@ class SorteoApiImpl : SorteoApi {
       count: String
   ): RequestState<List<Int>> {
     return try {
-      val url = "${SorteoApi.URL}$version/random?min=$min&max=$max&count=$count"
-      Logger.d(TAG) { "Url: $url" }
-
-      val response = httpClient.get(urlString = url)
-      if (response.status.value == 200) {
+      val response =
+          httpClient.get(urlString = SorteoApi.URL) {
+            url {
+              appendPathSegments(version, "random")
+              parameters.append("min", min)
+              parameters.append("max", max)
+              parameters.append("count", count)
+            }
+          }
+      if (response.status.isSuccess()) {
         Logger.d(TAG) { "Success" }
         val apiResponse = Json.decodeFromString<List<Int>>(response.body())
-
         RequestState.Success(data = apiResponse)
       } else {
         Logger.e(TAG) { "Http Error code: ${response.status}" }
