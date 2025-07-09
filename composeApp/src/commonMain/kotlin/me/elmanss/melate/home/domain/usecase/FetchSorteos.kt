@@ -16,6 +16,6 @@ class FetchSorteos(private val repository: SorteoRepository) {
       }
     }
 
-    return flowOf(sorteos).map { it.map { SorteoModel(it) } }
+    return flowOf(sorteos).map { sorteos -> sorteos.map { sorteo -> SorteoModel(sorteo.sorted()) } }
   }
 }
