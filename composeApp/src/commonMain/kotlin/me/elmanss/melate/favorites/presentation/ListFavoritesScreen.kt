@@ -56,6 +56,7 @@ import me.elmanss.melate.common.presentation.component.MelateSorteoActionDialog
 import me.elmanss.melate.common.presentation.theme.Gray
 import me.elmanss.melate.common.presentation.theme.infoTextSize
 import me.elmanss.melate.common.presentation.theme.keySize
+import me.elmanss.melate.common.util.NetworkStatus
 import me.elmanss.melate.create.presentation.CreateFavoriteScreen
 import me.elmanss.melate.favorites.presentation.components.ListFavoriteItem
 import me.elmanss.melate.getPlatform
@@ -67,6 +68,7 @@ class ListFavoritesScreen : Screen {
   override fun Content() {
     val viewModel = getScreenModel<ListFavoritesScreenViewModel>()
     val uiState = viewModel.state.collectAsState()
+    val connectivityState by viewModel.connectivity.collectAsState(NetworkStatus.Unavailable)
     val sorteoState = rememberLazyListState()
     val snackbarState = remember { SnackbarHostState() }
     var multiselectState by remember { mutableStateOf(false) }
@@ -104,16 +106,14 @@ class ListFavoritesScreen : Screen {
                 listState = sorteoState,
                 actionOneIcon = org.jetbrains.compose.resources.vectorResource(Res.drawable.cloud),
                 onActionOneClicked = {
-                  viewModel.sendEvent(ListFavUiEvent.ShowLoader)
-                  viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
-                  //                      if (connectivityState == NetworkStatus.Available) {
-                  //                          viewModel.sendEvent(ListFavUiEvent.ShowLoader)
-                  //
-                  // viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
-                  //                      } else {
-                  //
-                  // viewModel.sendEvent(ListFavUiEvent.ShowConnectivityMessage(true))
-                  //                      }
+                  if (connectivityState == NetworkStatus.Available) {
+                    Logger.d { "Has internet connection" }
+                    viewModel.sendEvent(ListFavUiEvent.ShowLoader)
+                    viewModel.sendEvent(ListFavUiEvent.FetchFavFromNetwork)
+                  } else {
+                    Logger.e { "No internet connection" }
+                    viewModel.sendEvent(ListFavUiEvent.ShowConnectivityMessage(true))
+                  }
                 },
                 actionTwoIcon =
                     org.jetbrains.compose.resources.vectorResource(Res.drawable.human_edit),
@@ -183,8 +183,11 @@ class ListFavoritesScreen : Screen {
         )
       }
 
-      if (uiState.value.showDeletionSuccess) {
-        val successMsg = stringResource(Res.string.txt_fav_deletion_success)
+      if (uiState.value.showDeletionSuccess.first) {
+        val successMsg =
+            uiState.value.showDeletionSuccess.second.ifEmpty {
+              stringResource(Res.string.txt_fav_deletion_success)
+            }
         LaunchedEffect(true) {
           val result =
               snackbarState.showSnackbar(message = successMsg, duration = SnackbarDuration.Short)

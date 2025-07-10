@@ -7,10 +7,12 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import me.elmanss.melate.common.di.initializeKoin
+import me.elmanss.melate.common.util.NetworkConnectivityObserver
 import me.elmanss.melate.driver.DriverFactory
 
 fun main() = application {
-  initializeKoin(DriverFactory().createDriver())
+  initializeKoin(
+      DriverFactory().createDriver(), connectivityObserver = NetworkConnectivityObserver())
   Window(
       onCloseRequest = ::exitApplication,
       title = "Melate CMP",

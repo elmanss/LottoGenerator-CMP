@@ -13,13 +13,14 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import me.elmanss.melate.common.di.initializeKoin
+import me.elmanss.melate.common.util.NetworkConnectivityObserver
 import me.elmanss.melate.driver.DriverFactory
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
-    initializeKoin(DriverFactory(this).createDriver())
+    initializeKoin(DriverFactory(this).createDriver(), NetworkConnectivityObserver(this))
     setContent {
       App()
       val darkTheme = isSystemInDarkTheme()
