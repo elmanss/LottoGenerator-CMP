@@ -4,7 +4,7 @@ import me.elmanss.melate.favorites.domain.model.FavoritoModel
 
 data class ListFavoritesScreenState(
     val favs: List<FavoritoModel> = emptyList(),
-    val showDeletionSuccess: Boolean = false,
+    val showDeletionSuccess: Pair<Boolean, String> = Pair(false, ""),
     val favToDelete: FavoritoModel? = null,
     val showMultiDeletionPrompt: Boolean = false,
     val multiselectEnabled: Boolean = false,
@@ -15,7 +15,7 @@ data class ListFavoritesScreenState(
 ) {
   fun clearFlags() =
       this.copy(
-          showDeletionSuccess = false,
+          showDeletionSuccess = Pair(false, ""),
           favToDelete = null,
           showMultiDeletionPrompt = false,
           multiselectEnabled = false,

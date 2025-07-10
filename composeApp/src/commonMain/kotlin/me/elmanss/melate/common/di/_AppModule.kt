@@ -12,6 +12,7 @@ import me.elmanss.melate.common.data.repository.FavoritosRepository
 import me.elmanss.melate.common.data.repository.FavoritosRepositoryImpl
 import me.elmanss.melate.common.domain.SorteoApi
 import me.elmanss.melate.common.domain.datasource.SorteoDataSource
+import me.elmanss.melate.common.util.NetworkConnectivityObserver
 import me.elmanss.melate.create.presentation.CreateFavoriteScreenViewModel
 import me.elmanss.melate.data.FavoritoQueries
 import me.elmanss.melate.favorites.domain.usecase.AddFavorite
@@ -69,17 +70,19 @@ fun favoritesModule() = module {
         fetchSorteoFromNetwork = FetchSorteoFromNetwork(get(named("remoteRepo"))))
   }
 
-  factory { ListFavoritesScreenViewModel(get()) }
+  factory { ListFavoritesScreenViewModel(get(), get()) }
 
   factory { CreateFavoriteScreenViewModel(get()) }
 }
 
-fun appModule(driver: SqlDriver) = module {
+fun appModule(driver: SqlDriver, connectivityObserver: NetworkConnectivityObserver) = module {
   includes(homeModule(), favoritesModule())
   single {
     Database.Schema.create(driver)
     Database(driver)
   }
+
+  single<NetworkConnectivityObserver> { connectivityObserver }
   single<FavoritoQueries> {
     val database = get<Database>()
     database.favoritoQueries
@@ -90,8 +93,8 @@ fun appModule(driver: SqlDriver) = module {
   single<FavoritosRepository> { FavoritosRepositoryImpl(get()) }
 }
 
-fun initializeKoin(driver: SqlDriver) {
+fun initializeKoin(driver: SqlDriver, connectivityObserver: NetworkConnectivityObserver) {
   if (KoinPlatform.getKoinOrNull() == null) {
-    startKoin { modules(appModule(driver)) }
+    startKoin { modules(appModule(driver, connectivityObserver)) }
   }
 }
