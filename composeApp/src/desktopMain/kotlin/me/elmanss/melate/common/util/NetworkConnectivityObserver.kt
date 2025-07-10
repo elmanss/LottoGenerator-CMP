@@ -11,6 +11,12 @@ import java.net.Socket
 
 actual class NetworkConnectivityObserver {
 
+  companion object {
+    private const val GOOGLE_DNS_HOST = "8.8.8.8"
+    private const val GOOGLE_HTTP_HOST = "www.google.com"
+    private const val CLOUDFLARE_HTTP_HOST = "www.cloudflare.com"
+  }
+
   // This is a simplified check for JVM. For robust checking,
   // you might need to iterate NetworkInterfaces or use a library.
   // Pinging a reliable host is a common strategy.
@@ -18,9 +24,9 @@ actual class NetworkConnectivityObserver {
       flow {
             while (true) {
               // Check well-known HTTPS ports on reliable servers
-              val googleDnsReachable = canConnectToHost("8.8.8.8", 53, 1000) // DNS port
-              val googleHttpReachable = canConnectToHost("www.google.com", 80, 1000)
-              val cloudflareHttpReachable = canConnectToHost("www.cloudflare.com", 80, 1000)
+              val googleDnsReachable = canConnectToHost(GOOGLE_DNS_HOST, 53, 1000) // DNS port
+              val googleHttpReachable = canConnectToHost(GOOGLE_HTTP_HOST, 80, 1000)
+              val cloudflareHttpReachable = canConnectToHost(CLOUDFLARE_HTTP_HOST, 80, 1000)
 
               // Or for more certainty about general internet (not just specific services being up)
               // you might prefer testing DNS resolution + a common web port.
