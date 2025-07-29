@@ -1,25 +1,25 @@
 [versions]
-agp = "8.11.0"
-android-compileSdk = "35"
+agp = "8.11.1"
+android-compileSdk = "36"
 android-minSdk = "24"
-android-targetSdk = "35"
+android-targetSdk = "36"
 androidx-activity = "1.10.1"
-composeHotReload = "1.0.0-beta03"
+composeHotReload = "1.0.0-beta04"
 composeMultiplatform = "1.8.2"
 constraintlayoutComposeMultiplatform = "0.6.0"
-constraintlayoutComposeMultiplatformVersion = "0.6.0-shaded-core"
+constraintlayoutComposeMultiplatformVersion = "0.6.0"
 kotlin = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 
 kermit = "2.0.6"
 date-time = "0.7.1"
-techConstraintlayoutComposeMultiplatform = "0.6.0-shaded"
+techConstraintlayoutComposeMultiplatform = "0.6.0"
 voyager = "1.0.1"
 koinCore = "4.1.0"
 sqlDelight = "2.1.0"
 compose = "1.7.3"
-backHandler = "1.9.0-alpha03"
-ktor = "3.2.1"
+backHandler = "1.9.0-beta01"
+ktor = "3.2.3"
 
 [libraries]
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
