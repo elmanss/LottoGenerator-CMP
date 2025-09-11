@@ -3,7 +3,6 @@ package me.elmanss.melate.home.presentation.components
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,54 +26,94 @@ fun HomeListItem(
     onClick: (SorteoModel) -> Unit,
     onLongClick: (SorteoModel) -> Unit,
 ) {
-
   var actionState by rememberSaveable { mutableStateOf(false) }
+
+  // Update actionState based on selectableMode when it changes
+  // This handles the case where selectableMode becomes false externally
+  if (!selectableMode && actionState) {
+    actionState = false
+    // Optionally, if sorteo.selected should also reset:
+    // sorteo.selected = false
+    // onChecked.invoke(sorteo) // If you need to notify about this reset
+  }
+
   ConstraintLayout(
       modifier =
-          modifier
+          modifier // Use the passed-in modifier for the ConstraintLayout itself
               .fillMaxWidth()
               .padding(16.dp)
               .combinedClickable(
-                  onClick = { onClick.invoke(sorteo) },
+                  onClick = {
+                    // If in selectable mode and checkbox is visible,
+                    // let onCheckedChange handle the state.
+                    // Otherwise, perform the regular click.
+                    if (selectableMode) {
+                      actionState = !actionState
+                      sorteo.selected = actionState
+                      onChecked.invoke(sorteo)
+                    } else {
+                      onClick.invoke(sorteo)
+                    }
+                  },
                   onLongClick = {
-                    actionState = true
-                    sorteo.selected = true
-                    onLongClick.invoke(sorteo)
+                    if (!selectableMode) { // Only enable selectable mode via long click
+                      actionState = true
+                      sorteo.selected = true
+                      onLongClick.invoke(
+                          sorteo
+                      ) // This should likely trigger selectableMode = true in parent
+                    }
                   },
-              )) {
-        val (text, check) = createRefs()
+              )
+  ) {
+    val (textRef, checkRef) = createRefs()
 
-        if (selectableMode) {
-          Checkbox(
-              modifier =
-                  modifier.wrapContentWidth().constrainAs(check) {
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    height = Dimension.wrapContent
-                  },
-              checked = actionState,
-              onCheckedChange = {
-                actionState = !actionState
-                sorteo.selected = actionState
-                onChecked.invoke(sorteo)
+    Text(
+        text = sorteo.numeros.joinToString(),
+        textAlign = TextAlign.Start,
+        maxLines = 1,
+        // Use a new Modifier instance for the Text
+        modifier =
+            Modifier.constrainAs(textRef) {
+              start.linkTo(parent.start)
+              top.linkTo(parent.top)
+              bottom.linkTo(parent.bottom)
+              height = Dimension.wrapContent
+              // Conditionally set the end constraint
+              if (selectableMode) {
+                end.linkTo(checkRef.start, margin = 8.dp) // Link to checkbox start with a margin
+              } else {
+                end.linkTo(parent.end) // Link to parent end when checkbox is not visible
+              }
+              width = Dimension.fillToConstraints
+            },
+    )
+
+    if (selectableMode) {
+      Checkbox(
+          // Use a new Modifier instance for the Checkbox
+          modifier =
+              Modifier.constrainAs(checkRef) {
+                end.linkTo(parent.end)
+                top.linkTo(textRef.top) // Align with text top
+                bottom.linkTo(textRef.bottom) // Align with text bottom
+                height = Dimension.wrapContent
+                // start.linkTo(textRef.end) // Not strictly needed if Text links to checkRef.start
               },
-          )
-        } else {
-          actionState = false
-        }
-
-        Text(
-            text = sorteo.numeros.joinToString(),
-            textAlign = TextAlign.Start,
-            modifier =
-                modifier.constrainAs(text) {
-                  start.linkTo(parent.start)
-                  top.linkTo(parent.top)
-                  bottom.linkTo(parent.bottom)
-                  width = Dimension.fillToConstraints
-                  height = Dimension.wrapContent
-                },
-        )
-      }
+          checked = actionState,
+          onCheckedChange = { checked ->
+            actionState = checked
+            sorteo.selected = checked
+            onChecked.invoke(sorteo)
+          },
+      )
+    }
+    // This else block for actionState = false was problematic because
+    // it would run every recomposition when selectableMode is false,
+    // potentially conflicting with rememberSaveable.
+    // It's better handled at the top or by reacting to selectableMode changes.
+    // else {
+    //   actionState = false
+    // }
+  }
 }
