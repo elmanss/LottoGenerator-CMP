@@ -14,7 +14,8 @@ import me.elmanss.melate.common.util.isDigitsOnly
 import me.elmanss.melate.common.util.prettyPrint
 import me.elmanss.melate.favorites.domain.model.FavoritoModel
 import me.elmanss.melate.favorites.domain.usecase.FavoritesUseCases
-import java.time.ZonedDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 enum class Clearable {
   BACK_NAVIGATION,
@@ -168,6 +169,7 @@ class CreateFavoriteScreenViewModel(private val useCases: FavoritesUseCases) : S
     }
   }
 
+  @OptIn(ExperimentalTime::class)
   private fun insertFavorite(sorteo: List<String>) {
     screenModelScope.launch {
       val map = sorteo.map { it.toInt() }.sorted().map { it.toString() }
@@ -176,7 +178,8 @@ class CreateFavoriteScreenViewModel(private val useCases: FavoritesUseCases) : S
               0,
               map.prettyPrint(),
               FavOrigin.Manual,
-              ZonedDateTime.now().toInstant().toEpochMilli(),
+              Clock.System.now().toEpochMilliseconds(),
+              // ZonedDateTime.now().toInstant().toEpochMilli(),
           )
       useCases.addFavorite(model).also {
         _state.update { state -> state.copy(sorteoInserted = true) }
